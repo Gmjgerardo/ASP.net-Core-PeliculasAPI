@@ -1,3 +1,5 @@
+using PeliculasAPI;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,6 +14,9 @@ builder.Services.AddOutputCache(options =>
 {
     options.DefaultExpirationTimeSpan = TimeSpan.FromSeconds(15);
 });
+
+// Construir la instancia de repositorio en memoria para ser pasado en "GenresController"
+builder.Services.AddTransient<RepositorioEnMemoria>();
 
 var app = builder.Build();
 
