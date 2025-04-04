@@ -19,5 +19,10 @@ namespace PeliculasAPI
         {
             return _genres;
         }
+
+        public Genre? ObtainGenreById(int id)
+        {
+            return _genres.FirstOrDefault(g => g.Id == id);
+        }
     }
 }
