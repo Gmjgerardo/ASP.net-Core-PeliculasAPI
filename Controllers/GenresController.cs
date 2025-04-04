@@ -5,6 +5,7 @@ using PeliculasAPI.Entidades;
 namespace PeliculasAPI.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     public class GenresController:  ControllerBase
     {
         [HttpGet]
@@ -28,7 +29,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpPost]
-        public void Post()
+        public void Post([FromBody] Genre genre)
         {
 
         }
