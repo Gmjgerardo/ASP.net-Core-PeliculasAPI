@@ -29,9 +29,17 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpPost]
-        public void Post([FromBody] Genre genre)
+        public IActionResult Post([FromBody] Genre genre)
         {
+            var repository = new RepositorioEnMemoria();
+            var genreNameIsRegistered = repository.Exist(genre.Name);
 
+            if (genreNameIsRegistered)
+            {
+                return BadRequest($"Ya existe un género con el nombre {genre.Name}");
+            }
+
+            return Ok();
         }
 
         [HttpPut]

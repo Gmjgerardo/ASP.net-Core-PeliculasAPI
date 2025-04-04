@@ -25,5 +25,10 @@ namespace PeliculasAPI
             await Task.Delay(TimeSpan.FromSeconds(3));
             return _genres.FirstOrDefault(g => g.Id == id);
         }
+
+        public bool Exist(string name)
+        {
+            return _genres.Any(g => g.Name == name);
+        }
     }
 }
