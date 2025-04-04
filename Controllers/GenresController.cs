@@ -17,10 +17,10 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<Genre> Get(int id)
+        public async Task<ActionResult<Genre>> Get(int id)
         {
             var repository = new RepositorioEnMemoria();
-            var genre = repository.ObtainGenreById(id);
+            var genre = await repository.ObtainGenreById(id);
 
             return genre is null ? NotFound() : genre;
         }

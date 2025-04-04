@@ -20,8 +20,9 @@ namespace PeliculasAPI
             return _genres;
         }
 
-        public Genre? ObtainGenreById(int id)
+        public async Task<Genre?> ObtainGenreById(int id)
         {
+            await Task.Delay(TimeSpan.FromSeconds(3));
             return _genres.FirstOrDefault(g => g.Id == id);
         }
     }
