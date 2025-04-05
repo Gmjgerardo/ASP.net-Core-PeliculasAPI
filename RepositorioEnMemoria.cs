@@ -30,5 +30,10 @@ namespace PeliculasAPI
         {
             return _genres.Any(g => g.Name == name);
         }
+
+        public void Create(Genre genre)
+        {
+            _genres.Add(genre);
+        }
     }
 }

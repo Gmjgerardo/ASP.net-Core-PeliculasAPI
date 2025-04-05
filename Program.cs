@@ -16,7 +16,7 @@ builder.Services.AddOutputCache(options =>
 });
 
 // Construir la instancia de repositorio en memoria para ser pasado en "GenresController"
-builder.Services.AddTransient<IRepository, SQLServerRepository>();
+builder.Services.AddSingleton<IRepository, SQLServerRepository>();
 
 // Services LifeTime testing
 builder.Services.AddTransient<TransientService>();

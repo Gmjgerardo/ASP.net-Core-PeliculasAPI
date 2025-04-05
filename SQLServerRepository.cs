@@ -30,5 +30,10 @@ namespace PeliculasAPI
             await Task.Delay(TimeSpan.FromSeconds(1));
             return _genres.FirstOrDefault(g => g.Id == id);
         }
+
+        public void Create(Genre genre)
+        {
+            _genres.Add(genre);
+        }
     }
 }
