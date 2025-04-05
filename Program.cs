@@ -1,5 +1,3 @@
-using PeliculasAPI;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,18 +8,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Añadiendo funcionalidad de cache
-builder.Services.AddOutputCache(options =>
-{
-    options.DefaultExpirationTimeSpan = TimeSpan.FromSeconds(15);
-});
-
-// Construir la instancia de repositorio en memoria para ser pasado en "GenresController"
-builder.Services.AddSingleton<IRepository, SQLServerRepository>();
-
-// Services LifeTime testing
-builder.Services.AddTransient<TransientService>();
-builder.Services.AddScoped<ScopedService>();
-builder.Services.AddSingleton<SingletonService>();
+builder.Services.AddOutputCache(options => {options.DefaultExpirationTimeSpan = TimeSpan.FromSeconds(15);});
 
 var app = builder.Build();
 
