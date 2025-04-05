@@ -14,13 +14,16 @@ namespace PeliculasAPI.Controllers
         private readonly ScopedService scoped1;
         private readonly ScopedService scoped2;
         private readonly SingletonService singleton;
+        private readonly IOutputCacheStore outputCacheStore;
+        private const string cacheTag = "genres";
 
         public GenresController(IRepository repository,
             TransientService transient1,
             TransientService transient2,
             ScopedService scoped1,
             ScopedService scoped2,
-            SingletonService singleton
+            SingletonService singleton,
+            IOutputCacheStore outputCacheStore
             )
         {
             this.repository = repository;
@@ -29,6 +32,7 @@ namespace PeliculasAPI.Controllers
             this.scoped1 = scoped1;
             this.scoped2 = scoped2;
             this.singleton = singleton;
+            this.outputCacheStore = outputCacheStore;
         }
 
         [HttpGet("servicios-tiempos-de-vida")]
@@ -44,6 +48,7 @@ namespace PeliculasAPI.Controllers
 
         [HttpGet]
         [HttpGet("all")]
+        [OutputCache(Tags = [cacheTag])]
         public List<Genre> Get()
         {
             var genres = repository.ObtainAllGenres();
@@ -52,7 +57,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("{id:int}")]
-        [OutputCache]
+        [OutputCache(Tags = [cacheTag])]
         public async Task<ActionResult<Genre>> Get(int id)
         {   
             var genre = await repository.ObtainGenreById(id);
@@ -61,7 +66,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Genre genre)
+        public async Task<IActionResult> Post([FromBody] Genre genre)
         {   
             var genreNameIsRegistered = repository.Exist(genre.Name);
 
@@ -71,6 +76,8 @@ namespace PeliculasAPI.Controllers
             }
 
             repository.Create(genre);
+            await outputCacheStore.EvictByTagAsync(cacheTag, default);
+
             return Ok();
         }
 
