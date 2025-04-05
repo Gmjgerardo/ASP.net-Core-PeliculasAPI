@@ -8,9 +8,9 @@ namespace PeliculasAPI.Controllers
     [ApiController]
     public class GenresController:  ControllerBase
     {
-        private readonly RepositorioEnMemoria repository;
+        private readonly IRepository repository;
 
-        public GenresController(RepositorioEnMemoria repository)
+        public GenresController(IRepository repository)
         {
             this.repository = repository;
         }
@@ -20,7 +20,7 @@ namespace PeliculasAPI.Controllers
         [HttpGet("all")]
         public List<Genre> Get()
         {
-            var genres = repository.ObtenerTodosLosGeneros();
+            var genres = repository.ObtainAllGenres();
 
             return genres;
         }

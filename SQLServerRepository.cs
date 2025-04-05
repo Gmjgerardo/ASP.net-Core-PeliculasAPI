@@ -2,17 +2,22 @@
 
 namespace PeliculasAPI
 {
-    public class RepositorioEnMemoria: IRepository
+    public class SQLServerRepository : IRepository
     {
         private List<Genre> _genres;
 
-        public RepositorioEnMemoria()
+        public SQLServerRepository()
         {
             _genres = new List<Genre>
             {
-                new Genre {Id = 1, Name = "Comedia"},
-                new Genre {Id = 2, Name = "Acción"},
+                new Genre{Id = 1, Name = "Comedia SQL"},
+                new Genre{Id = 2, Name = "Acción SQL"},
             };
+        }
+
+        public bool Exist(string name)
+        {
+            return _genres.Any(g => g.Name == name);
         }
 
         public List<Genre> ObtainAllGenres()
@@ -22,13 +27,8 @@ namespace PeliculasAPI
 
         public async Task<Genre?> ObtainGenreById(int id)
         {
-            await Task.Delay(TimeSpan.FromSeconds(3));
+            await Task.Delay(TimeSpan.FromSeconds(1));
             return _genres.FirstOrDefault(g => g.Id == id);
-        }
-
-        public bool Exist(string name)
-        {
-            return _genres.Any(g => g.Name == name);
         }
     }
 }

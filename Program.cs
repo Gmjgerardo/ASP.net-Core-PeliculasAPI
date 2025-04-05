@@ -16,7 +16,7 @@ builder.Services.AddOutputCache(options =>
 });
 
 // Construir la instancia de repositorio en memoria para ser pasado en "GenresController"
-builder.Services.AddTransient<RepositorioEnMemoria>();
+builder.Services.AddTransient<IRepository, SQLServerRepository>();
 
 var app = builder.Build();
 
