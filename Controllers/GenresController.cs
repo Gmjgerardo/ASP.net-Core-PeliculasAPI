@@ -15,6 +15,7 @@ namespace PeliculasAPI.Controllers
         private readonly ScopedService scoped2;
         private readonly SingletonService singleton;
         private readonly IOutputCacheStore outputCacheStore;
+        private readonly IConfiguration configuration;
         private const string cacheTag = "genres";
 
         public GenresController(IRepository repository,
@@ -23,7 +24,8 @@ namespace PeliculasAPI.Controllers
             ScopedService scoped1,
             ScopedService scoped2,
             SingletonService singleton,
-            IOutputCacheStore outputCacheStore
+            IOutputCacheStore outputCacheStore,
+            IConfiguration configuration
             )
         {
             this.repository = repository;
@@ -33,6 +35,13 @@ namespace PeliculasAPI.Controllers
             this.scoped2 = scoped2;
             this.singleton = singleton;
             this.outputCacheStore = outputCacheStore;
+            this.configuration = configuration;
+        }
+
+        [HttpGet("ejemplo-proveedor-configuracion")]
+        public string GetConnectionStringProvider()
+        {
+            return configuration.GetValue<string>("conectionString")!;
         }
 
         [HttpGet("servicios-tiempos-de-vida")]
