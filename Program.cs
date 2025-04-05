@@ -18,6 +18,11 @@ builder.Services.AddOutputCache(options =>
 // Construir la instancia de repositorio en memoria para ser pasado en "GenresController"
 builder.Services.AddTransient<IRepository, SQLServerRepository>();
 
+// Services LifeTime testing
+builder.Services.AddTransient<TransientService>();
+builder.Services.AddScoped<ScopedService>();
+builder.Services.AddSingleton<SingletonService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

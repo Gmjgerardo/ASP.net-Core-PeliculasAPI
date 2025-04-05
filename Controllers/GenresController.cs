@@ -9,12 +9,38 @@ namespace PeliculasAPI.Controllers
     public class GenresController:  ControllerBase
     {
         private readonly IRepository repository;
+        private readonly TransientService transient1;
+        private readonly TransientService transient2;
+        private readonly ScopedService scoped1;
+        private readonly ScopedService scoped2;
+        private readonly SingletonService singleton;
 
-        public GenresController(IRepository repository)
+        public GenresController(IRepository repository,
+            TransientService transient1,
+            TransientService transient2,
+            ScopedService scoped1,
+            ScopedService scoped2,
+            SingletonService singleton
+            )
         {
             this.repository = repository;
+            this.transient1 = transient1;
+            this.transient2 = transient2;
+            this.scoped1 = scoped1;
+            this.scoped2 = scoped2;
+            this.singleton = singleton;
         }
 
+        [HttpGet("servicios-tiempos-de-vida")]
+        public IActionResult GetLifeTimeServices()
+        {
+            return Ok(new
+            {
+                transients = new { transient1 = transient1.getId, transient2 = transient2.getId },
+                scopeds = new { scoped1 = scoped1.getId, scoped2 = scoped2.getId },
+                singleton = singleton.getId,
+            });
+        }
 
         [HttpGet]
         [HttpGet("all")]
