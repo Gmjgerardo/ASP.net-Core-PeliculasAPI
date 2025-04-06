@@ -1,5 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// Obtaining AllowedCORS
+var AllowedCORS = builder.Configuration.GetValue<string>("AllowedCORS")!.Split(";");
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -9,6 +12,13 @@ builder.Services.AddSwaggerGen();
 
 // Añadiendo funcionalidad de cache
 builder.Services.AddOutputCache(options => {options.DefaultExpirationTimeSpan = TimeSpan.FromSeconds(15);});
+
+builder.Services.AddCors(options => options.AddDefaultPolicy(opts =>
+{
+    opts.WithOrigins(AllowedCORS).
+        AllowAnyMethod().
+        AllowAnyHeader();
+}));
 
 var app = builder.Build();
 
@@ -26,5 +36,7 @@ app.UseOutputCache();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors();
 
 app.Run();
