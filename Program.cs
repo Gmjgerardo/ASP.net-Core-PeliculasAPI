@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using PeliculasAPI;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Obtaining AllowedCORS
@@ -19,6 +22,10 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(opts =>
         AllowAnyMethod().
         AllowAnyHeader();
 }));
+
+builder.Services.AddDbContext<ApplicationDBContext>(options => 
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 var app = builder.Build();
 
