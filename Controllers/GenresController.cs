@@ -33,6 +33,7 @@ namespace PeliculasAPI.Controllers
             DbSet<Genre> queryable = context.Genres;
             await HttpContext.InsertPaginationParametersOnHeader(queryable);
             List<GenreDTO> genres = await queryable
+                .OrderBy(g=> g.Id)
                 .Paginate(pagination)
                 .ProjectTo<GenreDTO>(mapper.ConfigurationProvider).ToListAsync();
 
