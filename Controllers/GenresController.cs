@@ -61,10 +61,24 @@ namespace PeliculasAPI.Controllers
             return CreatedAtRoute("obtainById", new {id = genre.Id}, genre);
         }
 
-        [HttpPut]
-        public void Put()
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Put(int id, [FromBody] GenreCreationDTO genreUpdate)
         {
-            throw new NotImplementedException();
+            IActionResult response = NotFound();
+            Boolean genreExist = await context.Genres.AnyAsync(g => g.Id == id);
+
+            if (genreExist is true)
+            {
+                Genre genre = mapper.Map<Genre>(genreUpdate);
+                genre.Id = id;
+
+                context.Update(genre);
+                await context.SaveChangesAsync();
+
+                response = NoContent();
+            }
+
+            return response;
         }
 
         [HttpDelete]
