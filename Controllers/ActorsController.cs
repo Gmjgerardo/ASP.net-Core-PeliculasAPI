@@ -6,7 +6,7 @@ using PeliculasAPI.Entities;
 
 namespace PeliculasAPI.Controllers
 {
-    [Route("api/actores")]
+    [Route("api/actors")]
     [ApiController]
     public class ActorsController: ControllerBase
     {
