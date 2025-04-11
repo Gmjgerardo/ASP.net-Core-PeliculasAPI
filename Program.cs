@@ -18,9 +18,10 @@ builder.Services.AddOutputCache(options => {options.DefaultExpirationTimeSpan = 
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(opts =>
 {
-    opts.WithOrigins(AllowedCORS).
-        AllowAnyMethod().
-        AllowAnyHeader();
+    opts.WithOrigins(AllowedCORS)
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .WithExposedHeaders(["total-records-count"]);
 }));
 
 builder.Services.AddDbContext<ApplicationDBContext>(options => 
