@@ -9,12 +9,20 @@ namespace PeliculasAPI.Utilities
         public AutoMapperProfiles()
         {
             GenresMapConfig();
+            ActorsMapConfig();
         }
 
         private void GenresMapConfig()
         {
             CreateMap<GenreCreationDTO, Genre>();
             CreateMap<Genre, GenreDTO>();
+        }
+
+        private void ActorsMapConfig()
+        {
+            CreateMap<ActorCreationDTO, Actor>()
+                .ForMember(actor => actor.ProfileImage, options => options.Ignore());
+            CreateMap<Actor, ActorDTO>();
         }
     }
 }
