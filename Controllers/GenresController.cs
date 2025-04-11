@@ -40,7 +40,7 @@ namespace PeliculasAPI.Controllers
             return genres;
         }
 
-        [HttpGet("{id:int}", Name = "obtainById")]
+        [HttpGet("{id:int}", Name = "obtainGenreById")]
         [OutputCache(Tags = [cacheTag])]
         public async Task<ActionResult<GenreDTO>> Get(int id)
         {
@@ -59,7 +59,7 @@ namespace PeliculasAPI.Controllers
             context.Add(genre);
             await context.SaveChangesAsync();
             await outputCacheStore.EvictByTagAsync(cacheTag, default);
-            return CreatedAtRoute("obtainById", new {id = genre.Id}, genre);
+            return CreatedAtRoute("obtainGenreById", new {id = genre.Id}, genre);
         }
 
         [HttpPut("{id:int}")]
