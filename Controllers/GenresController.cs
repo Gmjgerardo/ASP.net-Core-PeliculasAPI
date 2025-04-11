@@ -58,6 +58,7 @@ namespace PeliculasAPI.Controllers
 
             context.Add(genre);
             await context.SaveChangesAsync();
+            await outputCacheStore.EvictByTagAsync(cacheTag, default);
             return CreatedAtRoute("obtainById", new {id = genre.Id}, genre);
         }
 
@@ -74,6 +75,7 @@ namespace PeliculasAPI.Controllers
 
                 context.Update(genre);
                 await context.SaveChangesAsync();
+                await outputCacheStore.EvictByTagAsync(cacheTag, default);
 
                 response = NoContent();
             }
