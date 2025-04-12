@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 using PeliculasAPI.DTOs;
 using PeliculasAPI.Entities;
 using PeliculasAPI.Services;
+using PeliculasAPI.Utilities;
 
 namespace PeliculasAPI.Controllers
 {
@@ -27,6 +30,21 @@ namespace PeliculasAPI.Controllers
             this.fileStorage = fileStorage;
         }
 
+        [HttpGet]
+        [HttpGet("all")]
+        [OutputCache(Tags = [cacheTag])]
+        public async Task<List<ActorDTO>> Get([FromQuery] PaginationDTO pagination)
+        {
+            DbSet<Actor> queryable = context.Actors;
+
+            await HttpContext.InsertPaginationParametersOnHeader(queryable);
+            return await queryable
+                .OrderBy(actor => actor.Name)
+                .Paginate(pagination)
+                .ProjectTo<ActorDTO>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+        
         [HttpGet("{id:int}", Name = "obtainActorById")]
         public void Get(int id)
         {
