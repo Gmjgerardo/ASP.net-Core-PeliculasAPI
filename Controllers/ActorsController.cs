@@ -46,9 +46,14 @@ namespace PeliculasAPI.Controllers
         }
         
         [HttpGet("{id:int}", Name = "obtainActorById")]
-        public void Get(int id)
+        [OutputCache(Tags = [cacheTag])]
+        public async Task<ActionResult<ActorDTO>> Get(int id)
         {
-            throw new NotImplementedException();
+            ActorDTO? actor = await context.Actors
+                .ProjectTo<ActorDTO>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(actor => actor.Id == id);
+
+            return (actor is null) ? NotFound() : actor;
         }
 
         [HttpPost]
