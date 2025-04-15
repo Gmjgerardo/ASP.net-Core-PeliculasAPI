@@ -75,15 +75,25 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Put(int id, [FromForm] ActorCreationDTO actorData)
+        public async Task<IActionResult> Put(int id, [FromForm] ActorCreationDTO actorNewData)
         {
             IActionResult response = NotFound();
-            Boolean actorExist = await context.Actors.AnyAsync(actor => actor.Id == id);
+            Actor? actor = await context.Actors.SingleOrDefaultAsync(actor => actor.Id == id);
 
-            if (actorExist)
+            if (actor is not null)
             {
-                Actor actor = mapper.Map<ActorCreationDTO, Actor>(actorData);
-                actor.Id = id;
+                actor = mapper.Map<ActorCreationDTO, Actor>(actorNewData, actor);
+
+                // Edit profile image
+                if (actorNewData.ProfileImage is not null)
+                {
+                    string newPath = await fileStorage.Edit(
+                        container,
+                        path: actor.ProfileImage,
+                        file: actorNewData.ProfileImage);
+
+                    actor.ProfileImage = newPath;
+                }
 
                 context.Update(actor);
                 await context.SaveChangesAsync();
