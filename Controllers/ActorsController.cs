@@ -74,5 +74,25 @@ namespace PeliculasAPI.Controllers
             return CreatedAtRoute("obtainActorById", new {id = actor.Id}, actor);
         }
 
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Put(int id, [FromForm] ActorCreationDTO actorData)
+        {
+            IActionResult response = NotFound();
+            Boolean actorExist = await context.Actors.AnyAsync(actor => actor.Id == id);
+
+            if (actorExist)
+            {
+                Actor actor = mapper.Map<ActorCreationDTO, Actor>(actorData);
+                actor.Id = id;
+
+                context.Update(actor);
+                await context.SaveChangesAsync();
+                await outputCacheStore.EvictByTagAsync(cacheTag, default);
+
+                response = NoContent();
+            }
+
+            return response;
+        }
     }
 }
