@@ -94,5 +94,24 @@ namespace PeliculasAPI.Controllers
 
             return response;
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            IActionResult response = NotFound();
+            Actor? actor = await context.Actors.FirstOrDefaultAsync(actor => actor.Id == id);
+
+            if (actor is not null)
+            {
+                context.Remove<Actor>(actor);
+
+                await fileStorage.Delete(container, actor.ProfileImage);
+                await context.SaveChangesAsync();
+                await outputCacheStore.EvictByTagAsync(cacheTag, default);
+                response = NoContent();
+            }
+
+            return response;
+        }
     }
 }
