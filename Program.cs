@@ -47,12 +47,12 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
+app.UseCors();
+
 app.UseOutputCache();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors();
 
 app.Run();
