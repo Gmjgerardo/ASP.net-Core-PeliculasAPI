@@ -6,13 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using PeliculasAPI.DTOs;
 using PeliculasAPI.Entities;
 using PeliculasAPI.Services;
-using PeliculasAPI.Utilities;
 
 namespace PeliculasAPI.Controllers
 {
     [Route("api/actors")]
     [ApiController]
-    public class ActorsController: ControllerBase
+    public class ActorsController: CustomBaseController
     {
         private readonly ApplicationDBContext context;
         private readonly IMapper mapper;
@@ -22,7 +21,8 @@ namespace PeliculasAPI.Controllers
         private const string container = "actors";
 
         public ActorsController(ApplicationDBContext context, IMapper mapper,
-                IOutputCacheStore outputCacheStore, IFileStorage fileStorage)
+            IOutputCacheStore outputCacheStore, IFileStorage fileStorage)
+            : base(context, mapper)
         {
             this.context = context;
             this.mapper = mapper;
@@ -35,14 +35,7 @@ namespace PeliculasAPI.Controllers
         [OutputCache(Tags = [cacheTag])]
         public async Task<List<ActorDTO>> Get([FromQuery] PaginationDTO pagination)
         {
-            DbSet<Actor> queryable = context.Actors;
-
-            await HttpContext.InsertPaginationParametersOnHeader(queryable);
-            return await queryable
-                .OrderBy(actor => actor.Name)
-                .Paginate(pagination)
-                .ProjectTo<ActorDTO>(mapper.ConfigurationProvider)
-                .ToListAsync();
+            return await Get<Actor, ActorDTO>(pagination, orderParm: actor => actor.Name);
         }
         
         [HttpGet("{id:int}", Name = "obtainActorById")]

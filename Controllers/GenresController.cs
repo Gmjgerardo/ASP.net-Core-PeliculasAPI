@@ -5,13 +5,12 @@ using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using PeliculasAPI.DTOs;
 using PeliculasAPI.Entities;
-using PeliculasAPI.Utilities;
 
 namespace PeliculasAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenresController:  ControllerBase
+    public class GenresController:  CustomBaseController
     {
         private readonly IOutputCacheStore outputCacheStore;
         private readonly ApplicationDBContext context;
@@ -19,6 +18,7 @@ namespace PeliculasAPI.Controllers
         private const string cacheTag = "genres";
 
         public GenresController(IOutputCacheStore outputCacheStore, ApplicationDBContext context, IMapper mapper)
+            : base(context, mapper)
         {
             this.outputCacheStore = outputCacheStore;
             this.context = context;
@@ -30,14 +30,7 @@ namespace PeliculasAPI.Controllers
         [OutputCache(Tags = [cacheTag])]
         public async Task<List<GenreDTO>> Get([FromQuery] PaginationDTO pagination)
         {
-            DbSet<Genre> queryable = context.Genres;
-            await HttpContext.InsertPaginationParametersOnHeader(queryable);
-            List<GenreDTO> genres = await queryable
-                .OrderBy(g=> g.Id)
-                .Paginate(pagination)
-                .ProjectTo<GenreDTO>(mapper.ConfigurationProvider).ToListAsync();
-
-            return genres;
+            return await Get<Genre, GenreDTO>(pagination, orderParm: genre => genre.Name);
         }
 
         [HttpGet("{id:int}", Name = "obtainGenreById")]
