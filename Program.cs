@@ -25,8 +25,8 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(opts =>
         .WithExposedHeaders(["total-records-count"]);
 }));
 
-builder.Services.AddDbContext<ApplicationDBContext>(options => 
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), o => o.UseNetTopologySuite())
 );
 
 builder.Services.AddAutoMapper(typeof(Program));
