@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PeliculasAPI.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace PeliculasAPI.DTOs
@@ -12,7 +13,7 @@ namespace PeliculasAPI.DTOs
         public IFormFile? ProfileImage { get; set; }
     }
 
-    public class ActorDTO
+    public class ActorDTO: IId
     {
         public int Id { get; set; }
         public required string Name { get; set; }
