@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace PeliculasAPI.Controllers
 {
-    public class CustomBaseController: ControllerBase
+    public class CustomBaseController : ControllerBase
     {
         private readonly ApplicationDBContext context;
         private readonly IMapper mapper;
@@ -33,6 +33,17 @@ namespace PeliculasAPI.Controllers
                 .Paginate(pagination)
                 .ProjectTo<TDTO>(mapper.ConfigurationProvider)
                 .ToListAsync();
+        }
+
+        protected async Task<ActionResult<TDTO>> Get<TEntity, TDTO>(int id)
+            where TEntity : class, IId
+            where TDTO : IId
+        {
+            TDTO? entity = await context.Set<TEntity>()
+                .ProjectTo<TDTO>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            
+            return (entity is not null) ? entity : NotFound();
         }
     }
 }

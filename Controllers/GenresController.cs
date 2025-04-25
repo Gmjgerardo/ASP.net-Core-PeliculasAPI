@@ -37,11 +37,7 @@ namespace PeliculasAPI.Controllers
         [OutputCache(Tags = [cacheTag])]
         public async Task<ActionResult<GenreDTO>> Get(int id)
         {
-            GenreDTO? genre = await context.Genres
-                .ProjectTo<GenreDTO>(mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(g => g.Id == id);
-            
-            return (genre is null) ? NotFound() : genre;
+            return await Get<Genre, GenreDTO>(id);
         }
 
         [HttpPost]
