@@ -1,6 +1,10 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
 using PeliculasAPI;
 using PeliculasAPI.Services;
+using PeliculasAPI.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +33,13 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), o => o.UseNetTopologySuite())
 );
 
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddSingleton<GeometryFactory>(NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326));
+
+builder.Services.AddSingleton(provider => new MapperConfiguration(conf =>
+{
+    GeometryFactory geometryFactory = provider.GetRequiredService<GeometryFactory>();
+    conf.AddProfile(new AutoMapperProfiles(geometryFactory));
+}).CreateMapper());
 
 builder.Services.AddTransient<IFileStorage,LocalFileStorage>();
 builder.Services.AddHttpContextAccessor();
