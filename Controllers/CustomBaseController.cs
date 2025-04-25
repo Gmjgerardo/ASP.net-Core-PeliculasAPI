@@ -20,11 +20,11 @@ namespace PeliculasAPI.Controllers
             this.mapper = mapper;
         }
 
-        protected async Task<List<TDTO>> Get<TEntidad, TDTO>([FromQuery] PaginationDTO pagination,
-            Expression<Func<TEntidad, object>> orderParm)
-            where TEntidad : class
+        protected async Task<List<TDTO>> Get<TEntity, TDTO>([FromQuery] PaginationDTO pagination,
+            Expression<Func<TEntity, object>> orderParm)
+            where TEntity : class
         {
-            IQueryable<TEntidad> queryable = context.Set<TEntidad>().AsQueryable();
+            IQueryable<TEntity> queryable = context.Set<TEntity>().AsQueryable();
 
             await HttpContext.InsertPaginationParametersOnHeader(queryable);
             return await queryable
