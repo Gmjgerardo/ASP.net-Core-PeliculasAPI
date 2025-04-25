@@ -22,7 +22,7 @@ namespace PeliculasAPI.Controllers
 
         public ActorsController(ApplicationDBContext context, IMapper mapper,
             IOutputCacheStore outputCacheStore, IFileStorage fileStorage)
-            : base(context, mapper)
+            : base(context, mapper, outputCacheStore, cacheTag)
         {
             this.context = context;
             this.mapper = mapper;
