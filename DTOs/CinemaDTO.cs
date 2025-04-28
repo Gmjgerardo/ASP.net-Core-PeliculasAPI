@@ -1,12 +1,12 @@
-﻿using NetTopologySuite.Geometries;
-using System.ComponentModel.DataAnnotations;
+﻿using PeliculasAPI.Entities;
 
 namespace PeliculasAPI.DTOs
 {
-    public class CinemaDTO
+    public class CinemaDTO: IId
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public required Point location { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }
