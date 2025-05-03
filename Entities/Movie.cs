@@ -19,5 +19,9 @@ namespace PeliculasAPI.Entities
         [Required]
         [Unicode(false)]
         public required string Image { get; set; }
+
+        public List<MovieGenre> MovieGenres { get; set; } = new List<MovieGenre>();
+        public List<MovieCinema> MovieCinemas { get; set; } = new List<MovieCinema>();
+        public List<MovieActor> MovieActors { get; set; } = new List<MovieActor>();
     }
 }
