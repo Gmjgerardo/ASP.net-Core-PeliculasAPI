@@ -12,6 +12,7 @@ namespace PeliculasAPI.Utilities
             GenresMapConfig();
             ActorsMapConfig();
             CinemasMapConfig(geometryFactory);
+            MoviesMapConfig();
         }
 
         private void GenresMapConfig()
@@ -36,6 +37,20 @@ namespace PeliculasAPI.Utilities
             CreateMap<Cinema, CinemaDTO>()
                 .ForMember(cDTO => cDTO.Longitude, d => d.MapFrom(cinema => cinema.location.X))
                 .ForMember(cDTO => cDTO.Latitude, d => d.MapFrom(cinema => cinema.location.Y));
+        }
+
+        private void MoviesMapConfig()
+        {
+            CreateMap<MovieCreationDTO, Movie>()
+                .ForMember(movie => movie.Image, options => options.Ignore())
+                .ForMember(movie => movie.MovieGenres, dataList => dataList.MapFrom(dto =>
+                dto.GenresIds!.Select(id => new MovieGenre { GenreId = id})))
+                .ForMember(movie => movie.MovieCinemas, dataList => dataList.MapFrom(dto =>
+                dto.CinemasIds!.Select(id => new MovieCinema { CinemaId = id })))
+                .ForMember(movie => movie.MovieActors, dataList => dataList.MapFrom(dto =>
+                dto.Actors!.Select(actor => new MovieActor { ActorId = actor.Id, Character = actor.Character })));
+
+            CreateMap<Movie, MovieDTO>();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PeliculasAPI.Utilities;
 using System.ComponentModel.DataAnnotations;
 
 namespace PeliculasAPI.DTOs
@@ -16,5 +18,15 @@ namespace PeliculasAPI.DTOs
 
         [Required]
         public required IFormFile Image { get; set; }
+
+        // Relations
+        [ModelBinder(BinderType = typeof(TypeBinder))]
+        public List<int>? GenresIds { get; set; }
+
+        [ModelBinder(BinderType = typeof(TypeBinder))]
+        public List<int>? CinemasIds { get; set; }
+
+        [ModelBinder(BinderType = typeof(TypeBinder))]
+        public List<ActorMovieCreationDTO>? Actors { get; set; }
     }
 }
