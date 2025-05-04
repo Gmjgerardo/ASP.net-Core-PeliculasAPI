@@ -30,8 +30,16 @@ namespace PeliculasAPI.Controllers
             this.fileStorage = fileStorage;
         }
 
-        [HttpGet]
         [HttpGet("all")]
+        [OutputCache(Tags = [cacheTag])]
+        public async Task<List<ActorDTO>> Get()
+        {
+            return await context.Actors
+                .ProjectTo<ActorDTO>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+
+        [HttpGet]
         [OutputCache(Tags = [cacheTag])]
         public async Task<List<ActorDTO>> Get([FromQuery] PaginationDTO pagination)
         {
