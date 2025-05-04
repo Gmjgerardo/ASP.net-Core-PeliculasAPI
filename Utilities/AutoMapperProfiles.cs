@@ -26,6 +26,9 @@ namespace PeliculasAPI.Utilities
             CreateMap<ActorCreationDTO, Actor>()
                 .ForMember(actor => actor.ProfileImage, options => options.Ignore());
             CreateMap<Actor, ActorDTO>();
+
+            CreateMap<Actor, MovieActorDTO>()
+                .ForMember(mActor => mActor.Image, image => image.MapFrom(actor => actor.ProfileImage));
         }
 
         private void CinemasMapConfig(GeometryFactory geometryFactory)
