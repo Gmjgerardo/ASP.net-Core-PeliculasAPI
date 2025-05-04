@@ -32,10 +32,10 @@ namespace PeliculasAPI.Controllers
 
         [HttpGet("all")]
         [OutputCache(Tags = [cacheTag])]
-        public async Task<List<ActorDTO>> Get()
+        public async Task<List<MovieActorDTO>> Get()
         {
             return await context.Actors
-                .ProjectTo<ActorDTO>(mapper.ConfigurationProvider)
+                .ProjectTo<MovieActorDTO>(mapper.ConfigurationProvider)
                 .ToListAsync();
         }
 
