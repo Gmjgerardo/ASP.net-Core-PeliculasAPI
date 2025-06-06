@@ -30,6 +30,34 @@ namespace PeliculasAPI.Controllers
             this.storage = storage;
         }
 
+        [HttpGet("landing")]
+        public async Task<ActionResult<LandingPageDTO>> Get()
+        {
+            int top = 6;
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+
+            List<MovieDTO> upcomingMovies = await context.Movies
+                .Where(m => m.ReleaseDate > today)
+                .OrderBy(m => m.ReleaseDate)
+                .Take(top)
+                .ProjectTo<MovieDTO>(mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            List<MovieDTO> onCinemasMovies = await context.Movies
+                .Where(movie => movie.MovieCinemas.Select(mc => mc.MovieId).Contains(movie.Id))
+                .OrderBy(m => m.ReleaseDate)
+                .Take(top)
+                .ProjectTo<MovieDTO>(mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            LandingPageDTO result = new LandingPageDTO();
+
+            result.Upcoming = upcomingMovies;
+            result.OnCinemas = onCinemasMovies;
+
+            return result;
+        }
+
         [HttpGet("{id:int}", Name = "obtainMovieById")]
         public async Task<IActionResult> Get()
         {
