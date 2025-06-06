@@ -54,6 +54,26 @@ namespace PeliculasAPI.Utilities
                 dto.Actors!.Select(actor => new MovieActor { ActorId = actor.Id, Character = actor.Character })));
 
             CreateMap<Movie, MovieDTO>();
+
+            CreateMap<Movie, MovieDetailsDTO>()
+                .ForMember(m => m.Genres, entity => entity.MapFrom(m => m.MovieGenres))
+                .ForMember(m => m.Cinemas, entity => entity.MapFrom(m => m.MovieCinemas))
+                .ForMember(m => m.Actors, entity => entity.MapFrom(m => m.MovieActors.OrderBy(o => o.Order)));
+
+            CreateMap<MovieGenre, GenreDTO>()
+                .ForMember(g => g.Id, entity => entity.MapFrom(mg => mg.GenreId))
+                .ForMember(g => g.Name, entity => entity.MapFrom(mg => mg.Genre.Name));
+
+            CreateMap<MovieCinema, CinemaDTO>()
+                .ForMember(c => c.Id, entity => entity.MapFrom(mc => mc.CinemaId))
+                .ForMember(c => c.Name, entity => entity.MapFrom(mc => mc.Cinema.Name))
+                .ForMember(c => c.Longitude, entity => entity.MapFrom(mc => mc.Cinema.location.X))
+                .ForMember(c => c.Latitude, entity => entity.MapFrom(mc => mc.Cinema.location.Y));
+
+            CreateMap<MovieActor, MovieActorDTO>()
+                .ForMember(a => a.Id, entity => entity.MapFrom(ma => ma.ActorId))
+                .ForMember(a => a.Name, entity => entity.MapFrom(ma => ma.Actor.Name))
+                .ForMember(a => a.Image, entity => entity.MapFrom(ma => ma.Actor.ProfileImage));
         }
     }
 }

@@ -59,9 +59,18 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("{id:int}", Name = "obtainMovieById")]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<MovieDetailsDTO>> Get(int id)
         {
-            throw new NotImplementedException();
+            ActionResult<MovieDetailsDTO> result = NotFound();
+
+            MovieDetailsDTO? movie = await context.Movies
+                .ProjectTo<MovieDetailsDTO>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(movie => movie.Id == id);
+
+            if (movie is not null)
+                result = movie;
+
+            return result;
         }
 
         [HttpGet("PostGet")]
