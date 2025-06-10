@@ -117,6 +117,43 @@ namespace PeliculasAPI.Controllers
             return CreatedAtRoute("obtainMovieById", new { id = movie.Id }, movieDTO);
         }
 
+        [HttpGet("PutGet/{id:int}")]
+        public async Task<ActionResult<MoviePutGetDTO>> PutGet(int id)
+        {
+            ActionResult<MoviePutGetDTO> result = NotFound();
+
+            MovieDetailsDTO? movie = await context.Movies
+                .ProjectTo<MovieDetailsDTO>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (movie is not null) {
+                MoviePutGetDTO moviePutGet = new MoviePutGetDTO();
+
+                List<int> selectedGenresIds = movie.Genres.Select(g => g.Id).ToList();
+                List<GenreDTO> notSelectedGenres = await context.Genres
+                    .Where(g => !selectedGenresIds.Contains(g.Id))
+                    .ProjectTo<GenreDTO>(mapper.ConfigurationProvider)
+                    .ToListAsync();
+
+                List<int> selectedCinemasIds = movie.Cinemas.Select(c => c.Id).ToList();
+                List<CinemaDTO> notSelectedCinemas = await context.Cinemas
+                    .Where(c => !selectedCinemasIds.Contains(c.Id))
+                    .ProjectTo<CinemaDTO>(mapper.ConfigurationProvider)
+                    .ToListAsync();
+
+                moviePutGet.Movie = movie;
+                moviePutGet.SelectedGenres = movie.Genres;
+                moviePutGet.NotSelectedGenres = notSelectedGenres;
+                moviePutGet.SelectedCinemas = movie.Cinemas;
+                moviePutGet.NotSelectedCinemas = notSelectedCinemas;
+                moviePutGet.Actors = movie.Actors;
+
+                result = moviePutGet;
+            }
+
+            return result;
+        }
+
         private void AssignActorsOrder(Movie movie)
         {
             if (movie.MovieActors is not null)
