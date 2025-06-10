@@ -154,6 +154,37 @@ namespace PeliculasAPI.Controllers
             return result;
         }
 
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Put(int id, [FromForm] MovieCreationDTO movieCreateDTO)
+        {
+            IActionResult result = NotFound();
+
+            Movie? movie = await context.Movies
+                .Include(m => m.MovieGenres)
+                .Include(m => m.MovieCinemas)
+                .Include(m => m.MovieActors)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (movie is not null)
+            {
+                movie = mapper.Map(movieCreateDTO, movie);
+
+                if (movieCreateDTO.Image is not null)
+                {
+                    movie.Image = await storage.Edit(container, movie.Image, movieCreateDTO.Image);
+                }
+
+                AssignActorsOrder(movie);
+
+                await context.SaveChangesAsync();
+                await outputCacheStore.EvictByTagAsync(cacheTag, default);
+
+                result = NoContent();
+            }
+
+            return result;
+        }
+
         private void AssignActorsOrder(Movie movie)
         {
             if (movie.MovieActors is not null)
