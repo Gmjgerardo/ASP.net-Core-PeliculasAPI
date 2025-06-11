@@ -31,6 +31,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("landing")]
+        [OutputCache(Tags = [cacheTag])]
         public async Task<ActionResult<LandingPageDTO>> Get()
         {
             int top = 6;
@@ -59,6 +60,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("{id:int}", Name = "obtainMovieById")]
+        [OutputCache(Tags = [cacheTag])]
         public async Task<ActionResult<MovieDetailsDTO>> Get(int id)
         {
             ActionResult<MovieDetailsDTO> result = NotFound();
