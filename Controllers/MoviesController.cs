@@ -187,6 +187,24 @@ namespace PeliculasAPI.Controllers
             return result;
         }
 
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // Obtaining image/poster information from the selectes movie
+            string? imagePath = await context.Movies
+                .Where(movie => movie.Id == id)
+                .Select(movie => movie.Image)
+                .FirstOrDefaultAsync();
+
+            IActionResult response = await Delete<Movie>(id);
+
+            // Deleting image from storage if the movie was deleted correctly
+            if (response is NoContentResult)
+                await storage.Delete(container, imagePath);
+
+            return response;
+        }
+
         private void AssignActorsOrder(Movie movie)
         {
             if (movie.MovieActors is not null)
