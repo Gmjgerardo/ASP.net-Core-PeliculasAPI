@@ -16,8 +16,7 @@ namespace PeliculasAPI.DTOs
 
         public string? Trailer { get; set; }
 
-        [Required]
-        public required IFormFile Image { get; set; }
+        public IFormFile? Image { get; set; }
 
         // Relations
         [ModelBinder(BinderType = typeof(TypeBinder))]
