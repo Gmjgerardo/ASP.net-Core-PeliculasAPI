@@ -25,8 +25,14 @@ namespace PeliculasAPI.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet]
         [HttpGet("all")]
+        [OutputCache(Tags = [cacheTag])]
+        public async Task<List<GenreDTO>> Get()
+        {
+            return await Get<Genre, GenreDTO>(orderParm: genre => genre.Name);
+        }
+
+        [HttpGet]
         [OutputCache(Tags = [cacheTag])]
         public async Task<List<GenreDTO>> Get([FromQuery] PaginationDTO pagination)
         {
