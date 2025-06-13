@@ -35,7 +35,6 @@ namespace PeliculasAPI.Controllers
             return await queryable
                 .OrderBy(orderParm)
                 .Paginate(pagination)
-                .Paginate(pagination)
                 .ProjectTo<TDTO>(mapper.ConfigurationProvider)
                 .ToListAsync();
         }
