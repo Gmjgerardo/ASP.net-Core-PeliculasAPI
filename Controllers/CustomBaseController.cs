@@ -25,6 +25,15 @@ namespace PeliculasAPI.Controllers
             this.cacheTag = cacheTag;
         }
 
+        protected async Task<List<TDTO>> Get<TEntity, TDTO>(Expression<Func<TEntity, object>> orderParm)
+            where TEntity : class
+        {
+            return await context.Set<TEntity>()
+                .OrderBy(orderParm)
+                .ProjectTo<TDTO>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+
         protected async Task<List<TDTO>> Get<TEntity, TDTO>([FromQuery] PaginationDTO pagination,
             Expression<Func<TEntity, object>> orderParm)
             where TEntity : class
