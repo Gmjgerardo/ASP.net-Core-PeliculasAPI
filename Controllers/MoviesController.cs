@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PeliculasAPI.DTOs;
 using PeliculasAPI.Entities;
 using PeliculasAPI.Services;
+using PeliculasAPI.Utilities;
 
 namespace PeliculasAPI.Controllers
 {
@@ -96,6 +97,34 @@ namespace PeliculasAPI.Controllers
                 .ToListAsync();
         }
 
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<MovieDTO>>> Filter([FromQuery] MovieFilterDTO filterDTO)
+        {
+            IQueryable<Movie> movieQueryable = context.Movies.AsQueryable();
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+
+            if (!string.IsNullOrWhiteSpace(filterDTO.Title))
+                movieQueryable = movieQueryable.Where(m => m.Title.ToLower().Contains(filterDTO.Title.ToLower()));
+
+            if (filterDTO.OnCinemas)
+                movieQueryable = movieQueryable.Where(m => m.MovieCinemas.Count() > 0);
+
+            if (filterDTO.ComingSoon)
+                movieQueryable = movieQueryable.Where(m => m.ReleaseDate > today);
+
+            if (filterDTO.GenreId != 0)
+                movieQueryable = movieQueryable.Where(m => m.MovieGenres
+                .Select(g => g.GenreId).Contains(filterDTO.GenreId));
+
+            if (filterDTO.Pagination.RowsPerPage != 0 & filterDTO.Pagination.Page != 0)
+                movieQueryable = movieQueryable.Paginate(filterDTO.Pagination);
+
+            await HttpContext.InsertPaginationParametersOnHeader(movieQueryable);
+
+            return await movieQueryable
+                .ProjectTo<MovieDTO>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] MovieCreationDTO movieCreation)
