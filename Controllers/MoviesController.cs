@@ -116,10 +116,10 @@ namespace PeliculasAPI.Controllers
                 movieQueryable = movieQueryable.Where(m => m.MovieGenres
                 .Select(g => g.GenreId).Contains(filterDTO.GenreId));
 
+            await HttpContext.InsertPaginationParametersOnHeader(movieQueryable);
+
             if (filterDTO.Pagination.RowsPerPage != 0 & filterDTO.Pagination.Page != 0)
                 movieQueryable = movieQueryable.Paginate(filterDTO.Pagination);
-
-            await HttpContext.InsertPaginationParametersOnHeader(movieQueryable);
 
             return await movieQueryable
                 .ProjectTo<MovieDTO>(mapper.ConfigurationProvider)
