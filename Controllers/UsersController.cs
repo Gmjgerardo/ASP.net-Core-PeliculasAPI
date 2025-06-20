@@ -5,11 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PeliculasAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
     public class UsersController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
@@ -25,6 +28,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<ActionResult<AuthenticationResponseDTO>> Register(UserCredentialsDTO userCredentials)
         {
             ActionResult<AuthenticationResponseDTO> response = NotFound();
@@ -45,6 +49,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult<AuthenticationResponseDTO>> Login(UserCredentialsDTO userCredentials)
         {
             ActionResult<AuthenticationResponseDTO> response = BadRequest(new List<IdentityError>{ new IdentityError { Description = "Login incorrecto" } });
@@ -57,6 +62,36 @@ namespace PeliculasAPI.Controllers
 
                 if (result.Succeeded)
                     response = await BuildToken(user);
+            }
+
+            return response;
+        }
+
+        [HttpPost("BecomeAdmin")]
+        public async Task<IActionResult> BecomeAdmin(EditClaimDTO editClaimDTO)
+        {
+            IActionResult response = NotFound();
+            IdentityUser? user = await userManager.FindByEmailAsync(editClaimDTO.Email);
+
+            if (user is not null)
+            {
+                await userManager.AddClaimAsync(user, new Claim("isAdmin", "true"));
+                response = NoContent();
+            }
+
+            return response;
+        }
+
+        [HttpPost("RevokeAdmin")]
+        public async Task<IActionResult> RevokeAdmin(EditClaimDTO editClaimDTO)
+        {
+            IActionResult response = NotFound();
+            IdentityUser? user = await userManager.FindByEmailAsync(editClaimDTO.Email);
+
+            if (user is not null)
+            {
+                await userManager.RemoveClaimAsync(user, new Claim("isAdmin", "true"));
+                response = NoContent();
             }
 
             return response;

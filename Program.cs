@@ -56,6 +56,8 @@ builder.Services.AddAuthentication().AddJwtBearer(opts =>
     };
 });
 
+builder.Services.AddAuthorization(opts => opts.AddPolicy("isAdmin", policy => policy.RequireClaim("isAdmin")));
+
 builder.Services.AddSingleton<GeometryFactory>(NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326));
 
 builder.Services.AddSingleton(provider => new MapperConfiguration(conf =>

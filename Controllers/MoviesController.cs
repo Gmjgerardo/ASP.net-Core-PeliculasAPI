@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,7 @@ namespace PeliculasAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MoviesController : CustomBaseController
     {
         private readonly ApplicationDBContext context;
@@ -33,6 +36,7 @@ namespace PeliculasAPI.Controllers
 
         [HttpGet("landing")]
         [OutputCache(Tags = [cacheTag])]
+        [AllowAnonymous]
         public async Task<ActionResult<LandingPageDTO>> Get()
         {
             int top = 6;
@@ -62,6 +66,7 @@ namespace PeliculasAPI.Controllers
 
         [HttpGet("{id:int}", Name = "obtainMovieById")]
         [OutputCache(Tags = [cacheTag])]
+        [AllowAnonymous]
         public async Task<ActionResult<MovieDetailsDTO>> Get(int id)
         {
             ActionResult<MovieDetailsDTO> result = NotFound();
@@ -98,6 +103,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("filter")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<MovieDTO>>> Filter([FromQuery] MovieFilterDTO filterDTO)
         {
             IQueryable<Movie> movieQueryable = context.Movies.AsQueryable();

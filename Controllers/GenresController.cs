@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ namespace PeliculasAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
     public class GenresController:  CustomBaseController
     {
         private readonly IOutputCacheStore outputCacheStore;
@@ -27,6 +30,7 @@ namespace PeliculasAPI.Controllers
 
         [HttpGet("all")]
         [OutputCache(Tags = [cacheTag])]
+        [AllowAnonymous]
         public async Task<List<GenreDTO>> Get()
         {
             return await Get<Genre, GenreDTO>(orderParm: genre => genre.Name);
