@@ -7,6 +7,11 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using PeliculasAPI.Utilities;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper.QueryableExtensions;
+using AutoMapper;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace PeliculasAPI.Controllers
 {
@@ -18,13 +23,35 @@ namespace PeliculasAPI.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly IConfiguration configuration;
+        private readonly ApplicationDBContext context;
+        private readonly IMapper mapper;
+        private readonly IOutputCacheStore outputCacheStore;
+        private const string cacheTag = "users";
 
         public UsersController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration)
+            IConfiguration configuration, ApplicationDBContext context, IMapper mapper, IOutputCacheStore outputCacheStore)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
+            this.context = context;
+            this.mapper = mapper;
+            this.outputCacheStore = outputCacheStore;
+        }
+
+        [HttpGet("all")]
+        [OutputCache(Tags = [cacheTag])]
+        public async Task<ActionResult<List<UserDTO>>> Get([FromQuery] PaginationDTO? pagination = null)
+        {
+            IQueryable<UserDTO> queryable = context.Users.AsQueryable().ProjectTo<UserDTO>(mapper.ConfigurationProvider);
+            await HttpContext.InsertPaginationParametersOnHeader(queryable);
+
+            queryable = queryable.OrderBy(user => user.Email);
+
+            if (pagination is not null)
+                queryable = queryable.Paginate(pagination);
+
+            return await queryable.ToListAsync();
         }
 
         [HttpPost("register")]
@@ -45,6 +72,7 @@ namespace PeliculasAPI.Controllers
             else
                 response = BadRequest(result.Errors);
 
+            await outputCacheStore.EvictByTagAsync(cacheTag, default);
             return response;
         }
 
@@ -79,6 +107,7 @@ namespace PeliculasAPI.Controllers
                 response = NoContent();
             }
 
+            await outputCacheStore.EvictByTagAsync(cacheTag, default);
             return response;
         }
 
@@ -94,6 +123,7 @@ namespace PeliculasAPI.Controllers
                 response = NoContent();
             }
 
+            await outputCacheStore.EvictByTagAsync(cacheTag, default);
             return response;
         }
 

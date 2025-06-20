@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using NetTopologySuite.Geometries;
 using PeliculasAPI.DTOs;
 using PeliculasAPI.Entities;
@@ -13,6 +14,7 @@ namespace PeliculasAPI.Utilities
             ActorsMapConfig();
             CinemasMapConfig(geometryFactory);
             MoviesMapConfig();
+            UsersMapConfig();
         }
 
         private void GenresMapConfig()
@@ -74,6 +76,11 @@ namespace PeliculasAPI.Utilities
                 .ForMember(a => a.Id, entity => entity.MapFrom(ma => ma.ActorId))
                 .ForMember(a => a.Name, entity => entity.MapFrom(ma => ma.Actor.Name))
                 .ForMember(a => a.Image, entity => entity.MapFrom(ma => ma.Actor.ProfileImage));
+        }
+
+        private void UsersMapConfig()
+        {
+            CreateMap<IdentityUser, UserDTO>();
         }
     }
 }
