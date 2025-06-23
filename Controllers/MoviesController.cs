@@ -21,17 +21,19 @@ namespace PeliculasAPI.Controllers
         private readonly IMapper mapper;
         private readonly IOutputCacheStore outputCacheStore;
         private readonly IFileStorage storage;
+        private readonly IUsersService usersService;
         private const string cacheTag = "movies";
         private const string container = "movies";
 
         public MoviesController(ApplicationDBContext context, IMapper mapper,
-            IOutputCacheStore outputCacheStore, IFileStorage storage)
+            IOutputCacheStore outputCacheStore, IFileStorage storage, IUsersService usersService)
             : base(context, mapper, outputCacheStore, cacheTag)
         {
             this.context = context;
             this.mapper = mapper;
             this.outputCacheStore = outputCacheStore;
             this.storage = storage;
+            this.usersService = usersService;
         }
 
         [HttpGet("landing")]
@@ -65,7 +67,7 @@ namespace PeliculasAPI.Controllers
         }
 
         [HttpGet("{id:int}", Name = "obtainMovieById")]
-        [OutputCache(Tags = [cacheTag])]
+        //[OutputCache(Tags = [cacheTag])]
         [AllowAnonymous]
         public async Task<ActionResult<MovieDetailsDTO>> Get(int id)
         {
@@ -76,7 +78,33 @@ namespace PeliculasAPI.Controllers
                 .FirstOrDefaultAsync(movie => movie.Id == id);
 
             if (movie is not null)
+            {
+                double averageRating = 0.0;
+                int userRate = 0;
+
+                // Retrieve rating data for the movie
+                if (await context.MovieRatings.AnyAsync(rate => rate.MovieId == id))
+                {
+                    averageRating = await context.MovieRatings.Where(rate => rate.MovieId == id)
+                        .AverageAsync(r => r.Rate);
+                }
+
+                // Modify User Movie Rate if is logged
+                if (HttpContext.User.Identity!.IsAuthenticated)
+                {
+                    string userId = await usersService.GetUserId();
+                    Rating? dbRate = await context.MovieRatings
+                        .FirstOrDefaultAsync(r => r.MovieId == id
+                        && r.UserId == userId);
+
+                    if (dbRate is not null)
+                        userRate = dbRate.Rate;
+                }
+
+                movie.AverageRating = averageRating;
+                movie.UserRate = userRate;
                 result = movie;
+            }
 
             return result;
         }
