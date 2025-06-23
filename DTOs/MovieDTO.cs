@@ -7,5 +7,8 @@
         public DateOnly ReleaseDate { get; set; }
         public string? Trailer { get; set; }
         public required string Image { get; set; }
+
+        public int UserRate { get; set; }
+        public double AverageRating { get; set; }
     }
 }
