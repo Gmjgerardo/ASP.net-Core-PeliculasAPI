@@ -93,8 +93,9 @@ builder.Services.AddSingleton(provider => new MapperConfiguration(conf =>
     conf.AddProfile(new AutoMapperProfiles(geometryFactory));
 }).CreateMapper());
 
-builder.Services.AddTransient<IFileStorage,LocalFileStorage>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IFileStorage,LocalFileStorage>();
+builder.Services.AddTransient<IUsersService, UsersService>();
 
 var app = builder.Build();
 
